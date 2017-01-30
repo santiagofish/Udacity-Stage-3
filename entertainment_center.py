@@ -1,5 +1,7 @@
-import media
-import fresh_tomatoes
+#This is largely a file for storing the data that is used to create the HTML document 'My Fresh Tomatoes!' The arguments that each instance takes are coded in media.py.
+
+import media  #from media.py
+import fresh_tomatoes  #from fresh_tomatoes.py
 
 raiders = media.Movie("Raiders of the Lost Ark",
                       "Indiana Jones Kicks Nazi Ass",
@@ -140,6 +142,6 @@ all_tv_shows = [happy_endings, broad_city, the_wire, twin_peaks]
 
 all_books = [moby_dick, rings_of_saturn, miss_lonelyhearts, the_moth]
 
-all_media = all_movies + all_tv_shows + all_books
+all_media = all_movies + all_tv_shows + all_books  #combines all instances
 
-fresh_tomatoes.open_media_page(all_media) # CHECK TO SEE IF CHANGING MOVIES TO MEDIA WORKS
+fresh_tomatoes.open_media_page(all_media)  #initiates the built-in function open() from within fresh_tomatoes.py, dynamically populating and styling each tile with the relevant class and instance information.

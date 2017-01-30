@@ -1,8 +1,8 @@
+#This file was mostly written by Udacity. I've added the function media_type_determiner, styled the HTML/CSS, and made other (mostly naming--the file was originally set up only for movies) changes in order to assure the page populates correctly, recognizes the three child classes I've set up (Movie, Show, and Book), and  is free of glitches.
 
-import webbrowser
+import webbrowser  #for launching the static web page in a browser
 import os
 import re
-
 
 # Styles and scripting for the page
 main_page_head = '''
@@ -87,7 +87,6 @@ main_page_head = '''
 </head>
 '''
 
-
 # The main page layout and title bar
 main_page_content = '''
   <body>
@@ -122,7 +121,7 @@ main_page_content = '''
 '''
 
 
-# A single movie entry html template
+# A single media entry html template, including additional child-class info.
 media_tile_content = '''
 <div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="{trailer_youtube_id}" data-toggle="modal" data-target="#trailer">
     <img src="{poster_image_url}" width="200" height="312">
@@ -134,6 +133,10 @@ media_tile_content = '''
 '''
 
 def media_type_determiner(item):
+    '''This function uses the class variable CLASS_NAME to separate each item instance into its appropriate Class, in order to determine which additional data should populate in the item's tile on the web page.
+    Input: each item (i.e., instance) in the for loop below
+    Output: the particular additional info for each child class'''
+
     if item.CLASS_NAME == "movie":
         child_class_info = 'Rated ' + item.rating
 
@@ -146,7 +149,10 @@ def media_type_determiner(item):
     return child_class_info
 
 def create_media_tiles_content(favorite_things):
-    # The HTML content for this section of the page
+    ''' The HTML content for this section of the page
+    Input: favorite_things will be a list of instances
+    Output: HTML code for "My Fresh Tomatoes!"'''
+
     content = ''
     for item in favorite_things:
         # Extract the youtube ID from the url
@@ -160,16 +166,21 @@ def create_media_tiles_content(favorite_things):
         # Append the tile for the movie/show/book with its content filled in
         content += media_tile_content.format(
             media_title = item.title,
-            media_storyline = item.storyline, # I ADDED THIS
+            media_storyline = item.storyline,
             poster_image_url = item.poster_image_url,
             trailer_youtube_id = trailer_youtube_id, #from about youtube ID search
             media_creator = 'Created by: ' + item.creator,
             creation_date = item.creation_date,
-            child_class_info = media_type_determiner(item))  #procedure to determine different info for different class types
+            child_class_info = media_type_determiner(item)) #procedure to determine relevant additional info for tiles
+
     return content
 
 
 def open_media_page(favorite_things):
+    '''This procedure brings everything together and launches the page
+    Inputs: favorite_things is a list of instances
+    Output: populates the provided HTML code and launches 'My Fresh Tomatoes!'''
+
     # Create or overwrite the output file
     output_file = open('fresh_tomatoes.html', 'w')
 
