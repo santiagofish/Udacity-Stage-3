@@ -1,3 +1,4 @@
+
 import webbrowser
 import os
 import re
@@ -9,7 +10,7 @@ main_page_head = '''
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Fresh Tomatoes!</title>
+    <title>My Fresh Tomatoes!</title>
 
     <!-- Bootstrap 3 -->
     <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
@@ -19,6 +20,7 @@ main_page_head = '''
     <style type="text/css" media="screen">
         body {
             padding-top: 80px;
+            background-color: #EEE;
         }
         #trailer .modal-dialog {
             margin-top: 200px;
@@ -40,7 +42,7 @@ main_page_head = '''
             padding-top: 20px;
         }
         .movie-tile:hover {
-            background-color: #EEE;
+            background-color: #CCC;
             cursor: pointer;
         }
         .scale-media {
@@ -107,13 +109,13 @@ main_page_content = '''
       <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
         <div class="container">
           <div class="navbar-header">
-            <a class="navbar-brand" href="#">Fresh Tomatoes Movie Trailers</a>
+            <a class="navbar-brand" href="#">My Favorite Things</a>
           </div>
         </div>
       </div>
     </div>
     <div class="container">
-      {movie_tiles}
+      {media_tiles}
     </div>
   </body>
 </html>
@@ -121,42 +123,59 @@ main_page_content = '''
 
 
 # A single movie entry html template
-movie_tile_content = '''
+media_tile_content = '''
 <div class="col-md-6 col-lg-4 movie-tile text-center" data-trailer-youtube-id="{trailer_youtube_id}" data-toggle="modal" data-target="#trailer">
-    <img src="{poster_image_url}" width="220" height="342">
-    <h2>{movie_title}</h2>
+    <img src="{poster_image_url}" width="200" height="312">
+    <h3>{media_title}</h3>
+    {media_storyline}
+    <br>{media_creator}, {creation_date}
+    <br>{child_class_info}
 </div>
 '''
 
+def media_type_determiner(item):
+    if item.CLASS_NAME == "movie":
+        child_class_info = 'Rated ' + item.rating
 
-def create_movie_tiles_content(movies):
+    elif item.CLASS_NAME == "show":
+        child_class_info = 'Season ' + item.season + ', episode ' + item.episode
+
+    elif item.CLASS_NAME == "book":
+        child_class_info = item.pages + ' pages'
+
+    return child_class_info
+
+def create_media_tiles_content(favorite_things):
     # The HTML content for this section of the page
     content = ''
-    for movie in movies:
+    for item in favorite_things:
         # Extract the youtube ID from the url
         youtube_id_match = re.search(
-            r'(?<=v=)[^&#]+', movie.trailer_youtube_url)
+            r'(?<=v=)[^&#]+', item.trailer_youtube_url)
         youtube_id_match = youtube_id_match or re.search(
-            r'(?<=be/)[^&#]+', movie.trailer_youtube_url)
+            r'(?<=be/)[^&#]+', item.trailer_youtube_url)
         trailer_youtube_id = (youtube_id_match.group(0) if youtube_id_match
                               else None)
 
-        # Append the tile for the movie with its content filled in
-        content += movie_tile_content.format(
-            movie_title=movie.title,
-            poster_image_url=movie.poster_image_url,
-            trailer_youtube_id=trailer_youtube_id
-        )
+        # Append the tile for the movie/show/book with its content filled in
+        content += media_tile_content.format(
+            media_title = item.title,
+            media_storyline = item.storyline, # I ADDED THIS
+            poster_image_url = item.poster_image_url,
+            trailer_youtube_id = trailer_youtube_id, #from about youtube ID search
+            media_creator = 'Created by: ' + item.creator,
+            creation_date = item.creation_date,
+            child_class_info = media_type_determiner(item))  #procedure to determine different info for different class types
     return content
 
 
-def open_movies_page(movies):
+def open_media_page(favorite_things):
     # Create or overwrite the output file
     output_file = open('fresh_tomatoes.html', 'w')
 
-    # Replace the movie tiles placeholder generated content
+    # Replace the media tiles placeholder with generated content
     rendered_content = main_page_content.format(
-        movie_tiles=create_movie_tiles_content(movies))
+        media_tiles = create_media_tiles_content(favorite_things))
 
     # Output the file
     output_file.write(main_page_head + rendered_content)
